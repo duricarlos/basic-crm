@@ -21,7 +21,7 @@ export async function createLogAndReminder(clientId: string, formData: FormData)
   // Por ahora, leamos dueDate. Si existe, asumimos recordatorio.
 
   const dueDateStr = formData.get('dueDate') as string
-  const dueTimeStr = formData.get('dueTime') as string || '09:00'
+  const dueTimeStr = (formData.get('dueTime') as string) || '09:00'
   const dueDateISO = formData.get('dueDateISO') as string
 
   // Crear Log
@@ -34,7 +34,7 @@ export async function createLogAndReminder(clientId: string, formData: FormData)
   // Crear Reminder si hay fecha
   if (dueDateStr) {
     let dueDate: Date
-    
+
     if (dueDateISO) {
       // Si viene del cliente (con zona horaria correcta)
       dueDate = new Date(dueDateISO)

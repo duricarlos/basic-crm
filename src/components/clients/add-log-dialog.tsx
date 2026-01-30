@@ -23,7 +23,7 @@ export function AddLogDialog({ clientId }: { clientId: string }) {
     // Combinar fecha y hora para enviar en UTC
     if (hasReminder) {
       const date = formData.get('dueDate') as string
-      const time = formData.get('dueTime') as string || '09:00'
+      const time = (formData.get('dueTime') as string) || '09:00'
       if (date) {
         const localDate = new Date(`${date}T${time}`)
         formData.append('dueDateISO', localDate.toISOString())
@@ -82,7 +82,7 @@ export function AddLogDialog({ clientId }: { clientId: string }) {
                 <Label htmlFor='time' className='text-lg font-semibold flex items-center gap-2'>
                   <Clock className='h-5 w-5' /> Hora
                 </Label>
-                <Input type='time' id='time' name='dueTime' required={hasReminder} defaultValue="09:00" className='h-12 text-lg border-2' />
+                <Input type='time' id='time' name='dueTime' required={hasReminder} defaultValue='09:00' className='h-12 text-lg border-2' />
               </div>
             </div>
           )}
