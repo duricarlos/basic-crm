@@ -21,6 +21,8 @@ export async function createLogAndReminder(clientId: string, formData: FormData)
   // Por ahora, leamos dueDate. Si existe, asumimos recordatorio.
 
   const dueDateStr = formData.get('dueDate') as string
+  const dueTimeStr = formData.get('dueTime') as string || '09:00'
+  const dueDateISO = formData.get('dueDateISO') as string
 
   // Crear Log
   await db.insert(logEntries).values({
@@ -31,9 +33,17 @@ export async function createLogAndReminder(clientId: string, formData: FormData)
 
   // Crear Reminder si hay fecha
   if (dueDateStr) {
-    const dueDate = new Date(dueDateStr)
-    // Set time to morning (e.g., 9:00 AM) to be safe for cron jobs running daily
-    dueDate.setHours(9, 0, 0, 0)
+    let dueDate: Date
+    
+    if (dueDateISO) {
+      // Si viene del cliente (con zona horaria correcta)
+      dueDate = new Date(dueDateISO)
+    } else {
+      // Fallback (o si se deshabilitó JS): Construir en servidor (hora servidor/UTC)
+      const [year, month, day] = dueDateStr.split('-').map(Number)
+      const [hours, minutes] = dueTimeStr.split(':').map(Number)
+      dueDate = new Date(year, month - 1, day, hours, minutes)
+    }
 
     await db.insert(reminders).values({
       clientId,

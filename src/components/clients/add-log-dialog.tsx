@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { createLogAndReminder } from '../../actions/logs' // Need to create this
-import { MessageSquarePlus, Calendar } from 'lucide-react'
+import { MessageSquarePlus, Calendar, Clock } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 
 export function AddLogDialog({ clientId }: { clientId: string }) {
@@ -19,6 +19,16 @@ export function AddLogDialog({ clientId }: { clientId: string }) {
     event.preventDefault()
     setLoading(true)
     const formData = new FormData(event.currentTarget)
+
+    // Combinar fecha y hora para enviar en UTC
+    if (hasReminder) {
+      const date = formData.get('dueDate') as string
+      const time = formData.get('dueTime') as string || '09:00'
+      if (date) {
+        const localDate = new Date(`${date}T${time}`)
+        formData.append('dueDateISO', localDate.toISOString())
+      }
+    }
 
     try {
       await createLogAndReminder(clientId, formData)
@@ -61,11 +71,19 @@ export function AddLogDialog({ clientId }: { clientId: string }) {
           </div>
 
           {hasReminder && (
-            <div className='grid gap-2 animate-in fade-in slide-in-from-top-2'>
-              <Label htmlFor='date' className='text-lg font-semibold flex items-center gap-2'>
-                <Calendar className='h-5 w-5' /> Fecha del Recordatorio
-              </Label>
-              <Input type='date' id='date' name='dueDate' required={hasReminder} className='h-12 text-lg border-2' min={new Date().toISOString().split('T')[0]} />
+            <div className='grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2'>
+              <div className='grid gap-2'>
+                <Label htmlFor='date' className='text-lg font-semibold flex items-center gap-2'>
+                  <Calendar className='h-5 w-5' /> Fecha
+                </Label>
+                <Input type='date' id='date' name='dueDate' required={hasReminder} className='h-12 text-lg border-2' min={new Date().toISOString().split('T')[0]} />
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor='time' className='text-lg font-semibold flex items-center gap-2'>
+                  <Clock className='h-5 w-5' /> Hora
+                </Label>
+                <Input type='time' id='time' name='dueTime' required={hasReminder} defaultValue="09:00" className='h-12 text-lg border-2' />
+              </div>
             </div>
           )}
 
