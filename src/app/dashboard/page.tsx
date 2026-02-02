@@ -29,31 +29,10 @@ export default async function DashboardPage() {
     <div className='space-y-8 m-4'>
       {/* Top Metrics Row */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <MetricCard 
-            title='Pipeline Activo' 
-            value={`$${pipelineValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} 
-            description='Valor en negociación' 
-            icon={DollarSign} 
-        />
-        <MetricCard 
-            title='Ventas Cerradas' 
-            value={`$${wonValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} 
-            description='Total aprobado/pagado' 
-            icon={CheckCircle} 
-            className="border-emerald-200 bg-emerald-50"
-        />
-        <MetricCard 
-            title='Presupuestos Activos' 
-            value={activeBudgets} 
-            description='Propuestas en curso' 
-            icon={Clock} 
-        />
-        <MetricCard 
-            title='Tasa de Cierre' 
-            value={`${activeBudgets > 0 ? Math.round(((budgetCounts['approved'] || 0) / (activeBudgets + (budgetCounts['approved'] || 0))) * 100) : 0}%`} 
-            description='Efectividad' 
-            icon={Users} 
-        />
+        <MetricCard title='Pipeline Activo' value={`$${pipelineValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} description='Valor en negociación' icon={DollarSign} />
+        <MetricCard title='Ventas Cerradas' value={`$${wonValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`} description='Total aprobado/pagado' icon={CheckCircle} className='border-emerald-200 bg-emerald-50' />
+        <MetricCard title='Presupuestos Activos' value={activeBudgets} description='Propuestas en curso' icon={Clock} />
+        <MetricCard title='Tasa de Cierre' value={`${activeBudgets > 0 ? Math.round(((budgetCounts['approved'] || 0) / (activeBudgets + (budgetCounts['approved'] || 0))) * 100) : 0}%`} description='Efectividad' icon={Users} />
       </div>
 
       {/* Main Content Grid */}

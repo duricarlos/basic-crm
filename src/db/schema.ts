@@ -5,7 +5,7 @@ import type { AdapterAccount } from 'next-auth/adapters'
 // Enums
 export const statusEnum = pgEnum('status', ['new', 'estimate', 'follow_up', 'approval', 'approved', 'cancelled'])
 export const logTypeEnum = pgEnum('log_type', ['info', 'budget', 'call'])
-export const budgetStatusEnum = pgEnum('budget_status', ['draft', 'sent', 'follow_up', 'approval', 'approved', 'declined', 'paid', 'cancelled']);
+export const budgetStatusEnum = pgEnum('budget_status', ['draft', 'sent', 'follow_up', 'approval', 'approved', 'declined', 'paid', 'cancelled'])
 
 // NextAuth Tables
 export const users = pgTable('user', {

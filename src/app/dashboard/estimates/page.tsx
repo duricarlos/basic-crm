@@ -7,10 +7,7 @@ import { Info } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export default async function EstimatesPage() {
-  const [estimates, clients] = await Promise.all([
-    getEstimates(),
-    getClients()
-  ])
+  const [estimates, clients] = await Promise.all([getEstimates(), getClients()])
 
   return (
     <div className='flex flex-col gap-6 p-6 md:p-10 max-w-5xl mx-auto'>
@@ -33,13 +30,13 @@ export default async function EstimatesPage() {
       ) : (
         <div className='grid gap-6'>
           {estimates.map((budget) => (
-             <EstimateProcessCard 
-                key={budget.id} 
-                budget={{
-                   ...budget,
-                   updatedAt: budget.updatedAt || new Date()
-                }}
-             />
+            <EstimateProcessCard
+              key={budget.id}
+              budget={{
+                ...budget,
+                updatedAt: budget.updatedAt || new Date(),
+              }}
+            />
           ))}
         </div>
       )}
