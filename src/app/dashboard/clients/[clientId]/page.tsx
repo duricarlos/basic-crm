@@ -62,7 +62,26 @@ export default async function ClientPage({ params }: { params: Promise<{ clientI
               </div>
               <div>
                 <p className='font-semibold text-muted-foreground'>Estado Actual</p>
-                <Badge className='mt-1 text-base'>{client.status === 'new' ? 'Nuevo' : client.status === 'in_progress' ? 'En Proceso' : client.status === 'cancelled' ? 'Cancelado' : client.status}</Badge>
+                <Badge className='mt-1 text-base' variant={client.status === 'approved' ? 'default' : 'secondary'}>
+                  {(() => {
+                    switch (client.status) {
+                      case 'new':
+                        return 'Nuevo'
+                      case 'estimate':
+                        return 'Estimación'
+                      case 'follow_up':
+                        return 'Seguimiento'
+                      case 'approval':
+                        return 'Por Aprobar'
+                      case 'approved':
+                        return 'Aprobado'
+                      case 'cancelled':
+                        return 'Cancelado'
+                      default:
+                        return client.status
+                    }
+                  })()}
+                </Badge>
               </div>
               <Separator />
               <div>

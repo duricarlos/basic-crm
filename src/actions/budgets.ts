@@ -50,7 +50,7 @@ export async function createBudget(clientId: string, items: BudgetItem[], total:
   })
 
   if (client?.status === 'new') {
-    await db.update(clients).set({ status: 'in_progress' }).where(eq(clients.id, clientId))
+    await db.update(clients).set({ status: 'estimate' }).where(eq(clients.id, clientId))
   }
 
   revalidatePath(`/dashboard/clients/${clientId}`)
