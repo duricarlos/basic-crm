@@ -36,7 +36,7 @@ type Budget = {
   total: string
   dateGenerated: Date | null
   title: string | null
-  updatedAt: Date | null
+  updatedAt?: Date | null
 }
 
 type Log = {
