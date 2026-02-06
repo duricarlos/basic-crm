@@ -90,7 +90,7 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
   return (
     <Card className='w-full border-2 border-zinc-200 shadow-sm bg-white'>
       <CardHeader className='pb-2 border-b border-zinc-100 bg-zinc-50/50'>
-        <div className='flex items-center justify-between'>
+        <div className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
           <div>
             <div className='flex items-center gap-2'>
               <CardTitle className='text-2xl font-black text-black tracking-tight'>{budget.client.name}</CardTitle>
@@ -104,12 +104,13 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
               Presupuesto #{budget.id.slice(0, 8)} • {budget.updatedAt ? new Date(budget.updatedAt).toLocaleDateString('es-ES') : 'N/A'}
             </CardDescription>
           </div>
-          <div className='text-right'>
-            <p className='text-xs text-zinc-500 uppercase tracking-widest font-bold mb-1'>Valor Estimado</p>
-            <div className='flex items-center justify-end gap-3'>
+          <div className='w-full md:w-auto flex flex-row md:flex-col justify-between md:justify-end items-center md:items-end mt-2 md:mt-0'>
+            <div className='text-left md:text-right'>
+              <p className='text-xs text-zinc-500 uppercase tracking-widest font-bold mb-1'>Valor Estimado</p>
               <p className='text-3xl font-black text-emerald-600 tracking-tight'>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(budget.total)}</p>
-              <Dialog
-                open={open}
+            </div>
+            <Dialog
+              open={open}
                 onOpenChange={(val) => {
                   setOpen(val)
                   if (!val) setTimeout(() => setView('menu'), 300)
@@ -128,7 +129,7 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
                         <DialogTitle className='text-2xl font-black tracking-tight'>Actualizar Estado</DialogTitle>
                         <DialogDescription className='text-base text-zinc-600 font-medium'>Selecciona el nuevo estado para este presupuesto.</DialogDescription>
                       </DialogHeader>
-                      <div className='grid grid-cols-2 gap-3 p-6'>
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 p-6'>
                         <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-blue-50 hover:border-blue-200 border-2' onClick={() => handleStatusChange('sent')}>
                           <Send className='h-8 w-8 text-blue-500' />
                           Enviado
@@ -205,13 +206,12 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
                   )}
                 </DialogContent>
               </Dialog>
-            </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent className='pt-8 pb-6 px-8'>
-        {/* Progress Bar Container */}
-        <div className='relative flex items-center justify-between w-full'>
+      <CardContent className='pt-8 pb-6 px-4 md:px-8'>
+        {/* Desktop Progress Bar (Horizontal) */}
+        <div className='hidden md:flex relative items-center justify-between w-full'>
           {/* Background Line */}
           <div className='absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-zinc-200 -z-10' />
 
@@ -231,8 +231,29 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
           })}
         </div>
 
+        {/* Mobile Steps (Vertical List) */}
+        <div className='flex md:hidden flex-col space-y-3'>
+          {STEPS.map((step, index) => {
+            const isCompleted = index <= activeIndex
+            const isCurrent = index === activeIndex
+
+            return (
+              <div key={step.id} className={cn('flex items-center gap-4 p-3 rounded-lg border-2 transition-colors', isCurrent ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-transparent')}>
+                <div className={cn('min-w-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all', isCompleted ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-300')}>
+                  {isCompleted ? <CheckCircle2 size={20} strokeWidth={3} /> : <Circle size={20} strokeWidth={3} />}
+                </div>
+                <div className='flex flex-col'>
+                  <span className={cn('text-sm font-black uppercase tracking-wide', isCompleted || isCurrent ? 'text-zinc-900' : 'text-zinc-400')}>{step.label}</span>
+                  {isCurrent && <span className='text-xs font-bold text-emerald-600'>En Progreso</span>}
+                  {isCompleted && index < activeIndex && <span className='text-xs font-medium text-zinc-500'>Completado</span>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
         <div className='mt-8 flex justify-end'>
-          <Button asChild className='bg-zinc-900 hover:bg-zinc-800 text-white px-6 h-12 text-base font-bold shadow-sm transition-transform active:scale-95'>
+          <Button asChild className='w-full md:w-auto bg-zinc-900 hover:bg-zinc-800 text-white px-6 h-12 text-base font-bold shadow-sm transition-transform active:scale-95'>
             <Link href={`/dashboard/clients/${budget.client.id}`}>
               Gestionar Presupuesto
               <ArrowRight className='ml-2 h-5 w-5' />

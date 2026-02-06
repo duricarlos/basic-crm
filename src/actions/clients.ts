@@ -56,6 +56,7 @@ export async function getClients() {
         orderBy: [desc(logEntries.createdAt)],
         limit: 1,
       },
+      budgets: true,
     },
   })
 }
