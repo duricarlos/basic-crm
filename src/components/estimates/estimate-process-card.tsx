@@ -111,101 +111,101 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
             </div>
             <Dialog
               open={open}
-                onOpenChange={(val) => {
-                  setOpen(val)
-                  if (!val) setTimeout(() => setView('menu'), 300)
-                }}
-              >
-                <DialogTrigger asChild>
-                  <Button variant='outline' className='h-10 border-2 font-bold px-4 ml-2 md:ml-0 md:mt-2 gap-2 text-zinc-700 hover:text-black hover:border-zinc-400'>
-                    Actualizar Estado
-                    <ArrowRight className='h-4 w-4' />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className='sm:max-w-md gap-0 p-0 overflow-hidden bg-white border-2 border-zinc-200'>
-                  {view === 'menu' && (
-                    <>
-                      <DialogHeader className='p-6 pb-2 bg-zinc-50 border-b border-zinc-100'>
-                        <DialogTitle className='text-2xl font-black tracking-tight'>Actualizar Estado</DialogTitle>
-                        <DialogDescription className='text-base text-zinc-600 font-medium'>Selecciona el nuevo estado para este presupuesto.</DialogDescription>
-                      </DialogHeader>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 p-6'>
-                        <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-blue-50 hover:border-blue-200 border-2' onClick={() => handleStatusChange('sent')}>
-                          <Send className='h-8 w-8 text-blue-500' />
-                          Enviado
-                        </Button>
-                        <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-amber-50 hover:border-amber-200 border-2' onClick={() => handleStatusChange('follow_up')}>
-                          <Clock className='h-8 w-8 text-amber-500' />
-                          Seguimiento
-                        </Button>
-                        <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-indigo-50 hover:border-indigo-200 border-2' onClick={() => handleStatusChange('approval')}>
-                          <FileText className='h-8 w-8 text-indigo-500' />
-                          Por Aprobar
-                        </Button>
-                        <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-emerald-50 hover:border-emerald-200 border-2' onClick={() => handleStatusChange('approved')}>
-                          <CheckCircle2 className='h-8 w-8 text-emerald-500' />
-                          Aprobado
-                        </Button>
-                        <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-red-50 hover:border-red-200 border-2' onClick={() => setView('archive_confirm')}>
-                          <Archive className='h-8 w-8 text-red-500' />
-                          Archivar
-                        </Button>
-                      </div>
-                    </>
-                  )}
+              onOpenChange={(val) => {
+                setOpen(val)
+                if (!val) setTimeout(() => setView('menu'), 300)
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button variant='outline' className='h-10 border-2 font-bold px-4 ml-2 md:ml-0 md:mt-2 gap-2 text-zinc-700 hover:text-black hover:border-zinc-400'>
+                  Actualizar Estado
+                  <ArrowRight className='h-4 w-4' />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='sm:max-w-md gap-0 p-0 overflow-hidden bg-white border-2 border-zinc-200'>
+                {view === 'menu' && (
+                  <>
+                    <DialogHeader className='p-6 pb-2 bg-zinc-50 border-b border-zinc-100'>
+                      <DialogTitle className='text-2xl font-black tracking-tight'>Actualizar Estado</DialogTitle>
+                      <DialogDescription className='text-base text-zinc-600 font-medium'>Selecciona el nuevo estado para este presupuesto.</DialogDescription>
+                    </DialogHeader>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 p-6'>
+                      <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-blue-50 hover:border-blue-200 border-2' onClick={() => handleStatusChange('sent')}>
+                        <Send className='h-8 w-8 text-blue-500' />
+                        Enviado
+                      </Button>
+                      <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-amber-50 hover:border-amber-200 border-2' onClick={() => handleStatusChange('follow_up')}>
+                        <Clock className='h-8 w-8 text-amber-500' />
+                        Seguimiento
+                      </Button>
+                      <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-indigo-50 hover:border-indigo-200 border-2' onClick={() => handleStatusChange('approval')}>
+                        <FileText className='h-8 w-8 text-indigo-500' />
+                        Por Aprobar
+                      </Button>
+                      <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-emerald-50 hover:border-emerald-200 border-2' onClick={() => handleStatusChange('approved')}>
+                        <CheckCircle2 className='h-8 w-8 text-emerald-500' />
+                        Aprobado
+                      </Button>
+                      <Button variant='outline' className='h-24 flex flex-col items-center justify-center gap-2 text-base font-bold hover:bg-red-50 hover:border-red-200 border-2' onClick={() => setView('archive_confirm')}>
+                        <Archive className='h-8 w-8 text-red-500' />
+                        Archivar
+                      </Button>
+                    </div>
+                  </>
+                )}
 
-                  {view === 'reminder_prompt' && (
-                    <>
-                      <DialogHeader className='p-6 pb-2 bg-amber-50 border-b border-amber-100'>
-                        <DialogTitle className='text-2xl font-black tracking-tight text-amber-700 flex items-center gap-2'>
-                          <Clock className='h-6 w-6' /> Crear Recordatorio
-                        </DialogTitle>
-                        <DialogDescription className='text-base font-medium text-amber-900/80'>Configura el recordatorio de seguimiento para este presupuesto.</DialogDescription>
-                      </DialogHeader>
-                      <div className='p-6 flex flex-col gap-6'>
-                        <div className='space-y-2'>
-                          <Label className='text-base font-bold text-zinc-900'>Fecha del Recordatorio</Label>
-                          <div className='relative'>
-                            <Calendar className='absolute left-3 top-3.5 h-5 w-5 text-zinc-500 pointer-events-none' />
-                            <Input type='date' value={reminderDate} onChange={(e) => setReminderDate(e.target.value)} className='pl-10 h-12 text-lg font-medium border-2 border-zinc-200 focus-visible:ring-amber-500' />
-                          </div>
-                        </div>
-                        <div className='space-y-2'>
-                          <Label className='text-base font-bold text-zinc-900'>Nota</Label>
-                          <Textarea rows={3} value={reminderNote} onChange={(e) => setReminderNote(e.target.value)} className='resize-none text-base border-2 border-zinc-200 focus-visible:ring-amber-500' />
-                        </div>
-                        <div className='flex flex-col gap-3 pt-2'>
-                          <Button onClick={handleSaveReminder} disabled={loading} className='w-full h-12 text-lg font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-sm'>
-                            {loading ? 'Guardando...' : 'Guardar Recordatorio'}
-                          </Button>
-                          <Button variant='ghost' className='w-full text-zinc-500 font-semibold' onClick={resetDialog}>
-                            Omitir Recordatorio
-                          </Button>
+                {view === 'reminder_prompt' && (
+                  <>
+                    <DialogHeader className='p-6 pb-2 bg-amber-50 border-b border-amber-100'>
+                      <DialogTitle className='text-2xl font-black tracking-tight text-amber-700 flex items-center gap-2'>
+                        <Clock className='h-6 w-6' /> Crear Recordatorio
+                      </DialogTitle>
+                      <DialogDescription className='text-base font-medium text-amber-900/80'>Configura el recordatorio de seguimiento para este presupuesto.</DialogDescription>
+                    </DialogHeader>
+                    <div className='p-6 flex flex-col gap-6'>
+                      <div className='space-y-2'>
+                        <Label className='text-base font-bold text-zinc-900'>Fecha del Recordatorio</Label>
+                        <div className='relative'>
+                          <Calendar className='absolute left-3 top-3.5 h-5 w-5 text-zinc-500 pointer-events-none' />
+                          <Input type='date' value={reminderDate} onChange={(e) => setReminderDate(e.target.value)} className='pl-10 h-12 text-lg font-medium border-2 border-zinc-200 focus-visible:ring-amber-500' />
                         </div>
                       </div>
-                    </>
-                  )}
+                      <div className='space-y-2'>
+                        <Label className='text-base font-bold text-zinc-900'>Nota</Label>
+                        <Textarea rows={3} value={reminderNote} onChange={(e) => setReminderNote(e.target.value)} className='resize-none text-base border-2 border-zinc-200 focus-visible:ring-amber-500' />
+                      </div>
+                      <div className='flex flex-col gap-3 pt-2'>
+                        <Button onClick={handleSaveReminder} disabled={loading} className='w-full h-12 text-lg font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-sm'>
+                          {loading ? 'Guardando...' : 'Guardar Recordatorio'}
+                        </Button>
+                        <Button variant='ghost' className='w-full text-zinc-500 font-semibold' onClick={resetDialog}>
+                          Omitir Recordatorio
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
 
-                  {view === 'archive_confirm' && (
-                    <>
-                      <DialogHeader className='p-6 pb-2 bg-red-50 border-b border-red-100'>
-                        <DialogTitle className='text-2xl font-black tracking-tight text-red-700 flex items-center gap-2'>
-                          <AlertCircle className='h-6 w-6' /> ¿Archivar Presupuesto?
-                        </DialogTitle>
-                        <DialogDescription className='text-base font-medium text-red-900/80'>Esta acción no se puede deshacer fácilmente.</DialogDescription>
-                      </DialogHeader>
-                      <div className='p-6 flex flex-col gap-4'>
-                        <Button variant='destructive' className='w-full h-12 text-lg font-bold shadow-sm' onClick={handleCancel}>
-                          Sí, Archivar
-                        </Button>
-                        <Button variant='ghost' className='w-full text-zinc-500 font-semibold' onClick={() => setView('menu')}>
-                          Cancelar
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </DialogContent>
-              </Dialog>
+                {view === 'archive_confirm' && (
+                  <>
+                    <DialogHeader className='p-6 pb-2 bg-red-50 border-b border-red-100'>
+                      <DialogTitle className='text-2xl font-black tracking-tight text-red-700 flex items-center gap-2'>
+                        <AlertCircle className='h-6 w-6' /> ¿Archivar Presupuesto?
+                      </DialogTitle>
+                      <DialogDescription className='text-base font-medium text-red-900/80'>Esta acción no se puede deshacer fácilmente.</DialogDescription>
+                    </DialogHeader>
+                    <div className='p-6 flex flex-col gap-4'>
+                      <Button variant='destructive' className='w-full h-12 text-lg font-bold shadow-sm' onClick={handleCancel}>
+                        Sí, Archivar
+                      </Button>
+                      <Button variant='ghost' className='w-full text-zinc-500 font-semibold' onClick={() => setView('menu')}>
+                        Cancelar
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </CardHeader>
@@ -239,9 +239,7 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
 
             return (
               <div key={step.id} className={cn('flex items-center gap-4 p-3 rounded-lg border-2 transition-colors', isCurrent ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-transparent')}>
-                <div className={cn('min-w-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all', isCompleted ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-300')}>
-                  {isCompleted ? <CheckCircle2 size={20} strokeWidth={3} /> : <Circle size={20} strokeWidth={3} />}
-                </div>
+                <div className={cn('min-w-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all', isCompleted ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-300')}>{isCompleted ? <CheckCircle2 size={20} strokeWidth={3} /> : <Circle size={20} strokeWidth={3} />}</div>
                 <div className='flex flex-col'>
                   <span className={cn('text-sm font-black uppercase tracking-wide', isCompleted || isCurrent ? 'text-zinc-900' : 'text-zinc-400')}>{step.label}</span>
                   {isCurrent && <span className='text-xs font-bold text-emerald-600'>En Progreso</span>}
