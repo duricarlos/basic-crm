@@ -2,12 +2,39 @@ import { getEstimates } from '@/actions/estimates'
 import { getClients } from '@/actions/clients'
 import { EstimateProcessCard } from '@/components/estimates/estimate-process-card'
 import { CreateEstimateButton } from '@/components/estimates/create-estimate-button'
+import { StatusFilter } from '@/components/dashboard/status-filter'
 import { Info } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EstimatesPage() {
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function EstimatesPage({ searchParams }: PageProps) {
   const [estimates, clients] = await Promise.all([getEstimates(), getClients()])
+  const params = await searchParams
+  const filter = typeof params.filter === 'string' ? params.filter : 'all'
+
+  const filteredEstimates = estimates.filter((estimate) => {
+    if (filter === 'all') return true
+    return estimate.status === filter
+  })
+
+  // Calculate counts for each status
+  const counts = estimates.reduce((acc, estimate) => {
+    const status = estimate.status || 'draft'
+    acc[status] = (acc[status] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+
+  const filterOptions = [
+    { label: 'Borrador', value: 'draft', count: counts['draft'] },
+    { label: 'Enviado', value: 'sent', count: counts['sent'] },
+    { label: 'Seguimiento', value: 'follow_up', count: counts['follow_up'] },
+    { label: 'En Aprobación', value: 'approval', count: counts['approval'] },
+    { label: 'Aprobado', value: 'approved', count: counts['approved'] },
+  ].filter(opt => (opt.count ?? 0) > 0)
 
   return (
     <div className='flex flex-col gap-6 p-6 md:p-10 max-w-5xl mx-auto'>
@@ -19,27 +46,32 @@ export default async function EstimatesPage() {
         <CreateEstimateButton clients={clients} />
       </div>
 
-      {estimates.length === 0 ? (
-        <div className='p-6 rounded-xl bg-zinc-100 border border-zinc-200 flex flex-col gap-2'>
-          <div className='flex items-center gap-2 font-bold text-zinc-900'>
-            <Info className='h-5 w-5' />
-            <span>Sin estimaciones activas</span>
+      <div className="flex flex-col gap-6">
+        <StatusFilter options={filterOptions} allLabel="Todos" />
+
+        {filteredEstimates.length === 0 ? (
+          <div className='p-12 rounded-xl bg-zinc-50 border border-zinc-200 border-dashed flex flex-col items-center justify-center gap-2 text-center'>
+            <div className='p-3 bg-zinc-100 rounded-full'>
+              <Info className='h-6 w-6 text-zinc-400' />
+            </div>
+            <h3 className="font-semibold text-zinc-900">Sin estimaciones</h3>
+            <p className='text-zinc-500 text-sm max-w-sm'>
+              {filter === 'all' 
+                ? 'No hay presupuestos en proceso de negociación actualmente.' 
+                : 'No hay presupuestos con el estado seleccionado.'}
+            </p>
+            {filter !== 'all' && (
+              <StatusFilter options={[]} allLabel="Ver todos" />
+            )}
           </div>
-          <p className='text-zinc-500 text-base'>No hay presupuestos en proceso de negociación actualmente.</p>
-        </div>
-      ) : (
-        <div className='grid gap-6'>
-          {estimates.map((budget) => (
-            <EstimateProcessCard
-              key={budget.id}
-              budget={{
-                ...budget,
-                updatedAt: budget.updatedAt || new Date(),
-              }}
-            />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className='grid gap-6 grid-cols-1 lg:grid-cols-2'>
+            {filteredEstimates.map((estimate) => (
+              <EstimateProcessCard key={estimate.id} budget={estimate} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

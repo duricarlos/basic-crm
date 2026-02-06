@@ -117,7 +117,7 @@ export function EstimateProcessCard({ budget }: EstimateProcessCardProps) {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button variant='outline' className='h-10 border-2 font-bold px-4 ml-2 gap-2 text-zinc-700 hover:text-black hover:border-zinc-400'>
+                  <Button variant='outline' className='h-10 border-2 font-bold px-4 ml-2 md:ml-0 md:mt-2 gap-2 text-zinc-700 hover:text-black hover:border-zinc-400'>
                     Actualizar Estado
                     <ArrowRight className='h-4 w-4' />
                   </Button>
