@@ -1,6 +1,6 @@
 import { getClients } from '@/actions/clients'
 import { NewClientDialog } from '@/components/clients/new-client-dialog'
-import { Search, MoreHorizontal, FileText } from 'lucide-react'
+import { Search, MoreHorizontal, FileText, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
 import { 
   Table, 
   TableBody, 
@@ -25,36 +25,34 @@ function getInitials(name: string) {
     .substring(0, 2)
 }
 
-// Helper for progress based on status
-function getProgress(status: string) {
-  switch (status) {
-    case 'new': return 10
-    case 'estimate': return 30
-    case 'follow_up': return 50
-    case 'approval': return 75
-    case 'approved': return 100
-    case 'cancelled': return 0
-    default: return 0
-  }
-}
-
-function getStatusBadge(status: string) {
-    switch (status) {
-        case 'new':
-            return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Nuevo</Badge>
-        case 'estimate':
-            return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Estimación</Badge>
-        case 'follow_up':
-            return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Seguimiento</Badge>
-        case 'approval':
-             return <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">Por Aprobar</Badge>
-        case 'approved':
-            return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Aprobado</Badge>
-        case 'cancelled':
-            return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Cancelado</Badge>
-        default:
-            return <Badge variant="secondary">{status}</Badge>
+// Logic to determine "Client Status" based on Budgets
+function getDerivedStatus(budgets: any[]) {
+    if (!budgets || budgets.length === 0) {
+        return { label: 'Nuevo / Potencial', color: 'bg-gray-100 text-gray-600 border-gray-200', icon: AlertCircle }
     }
+
+    // Check for active budgets first (highest priority)
+    const active = budgets.filter(b => ['sent', 'follow_up', 'approval'].includes(b.status))
+    if (active.length > 0) {
+        // Find most critical status
+        if (active.some(b => b.status === 'approval')) return { label: 'Por Aprobar', color: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: FileText }
+        if (active.some(b => b.status === 'follow_up')) return { label: 'Seguimiento', color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock }
+        return { label: 'Presupuesto Enviado', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: FileText }
+    }
+
+    // Check for approved/won
+    const won = budgets.filter(b => ['approved', 'paid'].includes(b.status))
+    if (won.length > 0) {
+        return { label: 'Cliente Activo', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2 }
+    }
+
+    // Check for drafts
+    const drafts = budgets.filter(b => b.status === 'draft')
+    if (drafts.length > 0) {
+         return { label: 'Borrador', color: 'bg-gray-50 text-gray-700 border-gray-200', icon: FileText }
+    }
+
+    return { label: 'Sin Actividad Reciente', color: 'bg-gray-50 text-gray-400 border-gray-200', icon: AlertCircle }
 }
 
 export default async function ClientsPage() {
@@ -87,24 +85,30 @@ export default async function ClientsPage() {
           <TableHeader>
             <TableRow className='bg-gray-50/50 hover:bg-gray-50/50'>
               <TableHead className="w-[300px]">Cliente</TableHead>
+              <TableHead>Estado Actual</TableHead>
               <TableHead>Presupuestos</TableHead>
-              <TableHead className="w-[200px]">Progreso</TableHead>
-              <TableHead>Fecha Registro</TableHead>
-              <TableHead>Estado</TableHead>
+              <TableHead>Última Actividad</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {clients.length === 0 ? (
                <TableRow>
-                 <TableCell colSpan={6} className='h-24 text-center text-muted-foreground'>
+                 <TableCell colSpan={5} className='h-24 text-center text-muted-foreground'>
                    No hay clientes registrados.
                  </TableCell>
                </TableRow>
             ) : (
               clients.map((client) => {
-                const progress = getProgress(client.status || 'new');
-                
+                const status = getDerivedStatus(client.budgets);
+                const StatusIcon = status.icon;
+
+                // Sort logs to find latest date (createdAt might be string or Date depending on driver, assuming Date here from ORM)
+                const lastLog = client.logs?.[0]; 
+                const lastActivityDate = lastLog?.createdAt 
+                    ? new Date(lastLog.createdAt).toLocaleDateString() 
+                    : (client.createdAt ? new Date(client.createdAt).toLocaleDateString() : '-');
+
                 return (
                   <TableRow key={client.id} className='group hover:bg-gray-50 transition-colors cursor-pointer'>
                      <TableCell className="font-medium">
@@ -122,29 +126,21 @@ export default async function ClientsPage() {
                         </Link>
                      </TableCell>
                      <TableCell>
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <FileText className="h-4 w-4 text-gray-400" />
-                            <span>{client.budgets.length} Presupuestos</span>
+                        <Badge variant="outline" className={`px-2 py-1 gap-1.5 ${status.color}`}>
+                            <StatusIcon className="h-3.5 w-3.5" />
+                            {status.label}
+                        </Badge>
+                     </TableCell>
+                     <TableCell>
+                        <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-2 py-1 rounded-md w-fit border border-gray-100">
+                            <FileText className="h-3.5 w-3.5 text-gray-400" />
+                            <span className="text-xs font-semibold">{client.budgets.length}</span>
                         </div>
                      </TableCell>
                      <TableCell>
-                        <div className="flex items-center gap-2">
-                             <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div 
-                                    className="h-full bg-emerald-500 transition-all duration-500 ease-out" 
-                                    style={{ width: `${progress}%` }}
-                                />
-                             </div>
-                             <span className="text-xs font-medium text-gray-600 w-8">{progress}%</span>
-                        </div>
-                     </TableCell>
-                     <TableCell>
-                        <span className="text-sm text-gray-500">
-                             {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : '-'}
+                        <span className="text-xs text-gray-500 font-medium">
+                             {lastActivityDate}
                         </span>
-                     </TableCell>
-                     <TableCell>
-                        {getStatusBadge(client.status || 'new')}
                      </TableCell>
                      <TableCell className="text-right">
                         <Link href={`/dashboard/clients/${client.id}`}>
